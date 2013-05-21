@@ -16,9 +16,9 @@ namespace XorPreCompile
             Console.WriteLine("XorPreProcess by KN4CK3R");
             Console.WriteLine("www.oldschoolhack.de");
 
-            if (args.Length < 2)
+            if (args.Length < 3)
             {
-                Console.Write("XorPreProcess <path to project file> <project file name> [refresh]");
+                Console.Write("XorPreProcess <c++|c#> <path to project file> <project file name> [refresh]");
                 return;
             }
 
@@ -173,6 +173,12 @@ namespace XorPreCompile
                         c = '\r';
                     else if (c == 't')
                         c = '\t';
+					else if (c == 'f')
+						c = '\f';
+					else if (c == 'b')
+						c = '\b';
+					else if (c == '"')
+						c = '\"';
                     else if (c == 'x')
                     {
                         ++i;
