@@ -212,7 +212,7 @@ namespace XorPreCompile
 				realData += c;
 			}
 
-			var xor = random.Next(257);
+			var xor = random.Next(256);
 
 			StringBuilder sb = new StringBuilder();
 			sb.Append("/*" + data + "*/XorStr(" + realData.Length + ", 0x" + xor.ToString("X2") + ", ");
