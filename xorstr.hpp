@@ -73,10 +73,10 @@ private:
 };
 //---------------------------------------------------------------------------
 template<size_t length>
-constexpr ALWAYS_INLINE auto _xor_(char const (&str)[length])
+constexpr ALWAYS_INLINE auto _xor_defunct(char const (&str)[length]) //causes internal compiler errors on VS2015 sometimes
 {
 	return XorStr<length - 1>(str, std::make_index_sequence<length - 1>());
 }
 //---------------------------------------------------------------------------
-#define XOR_INLINE(str) XorStr<sizeof(str) - 1>(str, std::make_index_sequence<sizeof(str) - 1>())
+#define _xor_(str) XorStr<sizeof(str) - 1>(str, std::make_index_sequence<sizeof(str) - 1>())
 //---------------------------------------------------------------------------
