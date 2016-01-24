@@ -21,28 +21,20 @@ template<size_t length>
 class XorStr
 {
 public:
-	/* https://connect.microsoft.com/VisualStudio/feedback/details/1463556/delegating-constructor-in-constexpr-ctor-wont-compile
-	constexpr XorStr(char const (&str)[length + 1])
-	: XorStr(str, std::make_index_sequence<length - 1>())
-	{
-	}*/
-
-	template<size_t length, size_t... indices>
-	constexpr ALWAYS_INLINE XorStr(char const (&str)[length], std::index_sequence<indices...>)
-		: data{ crypt(str[indices], indices)..., '\0' },
-		  encrypted(true)
+	constexpr ALWAYS_INLINE XorStr(char const (&str)[length + 1])
+		: XorStr(str, std::make_index_sequence<length - 1>())
 	{
 
 	}
 
-	inline const char* c_str() const
+	inline auto c_str() const
 	{
 		decrypt();
 
 		return data;
 	}
 
-	inline std::string str() const
+	inline auto str() const
 	{
 		decrypt();
 
@@ -55,6 +47,14 @@ public:
 	}
 
 private:
+	template<size_t length, size_t... indices>
+	constexpr ALWAYS_INLINE XorStr(char const (&str)[length], std::index_sequence<indices...>)
+		: data{ crypt(str[indices], indices)..., '\0' },
+		  encrypted(true)
+	{
+
+	}
+
 	static constexpr auto XOR_KEY = static_cast<unsigned char>(
 		const_atoi(__TIME__[7]) +
 		const_atoi(__TIME__[6]) * 10 +
@@ -69,7 +69,7 @@ private:
 		return static_cast<char>(c ^ (XOR_KEY + i));
 	}
 
-	inline auto decrypt() const
+	inline void decrypt() const
 	{
 		if (encrypted)
 		{
@@ -100,7 +100,7 @@ inline bool operator==(const std::string &lhs, const XorStr<length> &rhs)
 template<size_t length>
 inline std::ostream& operator<<(std::ostream &lhs, const XorStr<length> &rhs)
 {
-	lhs << rhs.str();
+	lhs << rhs.c_str();
 
 	return lhs;
 }
@@ -118,10 +118,8 @@ inline std::string operator+(const std::string &lhs, const XorStr<length> &rhs)
 }
 //---------------------------------------------------------------------------
 template<size_t length>
-constexpr ALWAYS_INLINE auto _xor_defunct(char const (&str)[length])
+constexpr ALWAYS_INLINE auto _xor_(char const (&str)[length])
 {
-	return XorStr<length - 1>(str, std::make_index_sequence<length - 1>());
+	return XorStr<length - 1>(str);
 }
-//---------------------------------------------------------------------------
-#define _xor_(str) XorStr<sizeof(str) - 1>(str, std::make_index_sequence<sizeof(str) - 1>())
 //---------------------------------------------------------------------------
