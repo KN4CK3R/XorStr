@@ -30,7 +30,7 @@ public:
 	template<size_t length, size_t... indices>
 	constexpr ALWAYS_INLINE XorStr(char const (&str)[length], std::index_sequence<indices...>)
 		: data{ crypt(str[indices], indices)..., '\0' },
-		encrypted(true)
+		  encrypted(true)
 	{
 
 	}
@@ -42,11 +42,16 @@ public:
 		return data;
 	}
 
-	inline operator std::string() const
+	inline std::string str() const
 	{
 		decrypt();
 
 		return std::string(data, data + length);
+	}
+
+	inline operator std::string() const
+	{
+		return str();
 	}
 
 private:
@@ -57,7 +62,7 @@ private:
 		const_atoi(__TIME__[3]) * 600 +
 		const_atoi(__TIME__[1]) * 3600 +
 		const_atoi(__TIME__[0]) * 36000
-		);
+	);
 
 	static ALWAYS_INLINE constexpr auto crypt(char c, size_t i)
 	{
@@ -83,20 +88,33 @@ private:
 template<size_t length, size_t length2>
 inline bool operator==(const XorStr<length> &lhs, const XorStr<length2> &rhs)
 {
-	return strcmp(lhs.c_str(), rhs.c_str()) == 0;
+	return length == length2 && lhs.str() == rhs.str();
 }
 //---------------------------------------------------------------------------
 template<size_t length>
 inline bool operator==(const std::string &lhs, const XorStr<length> &rhs)
 {
-	return lhs == (std::string)rhs;
+	return lhs.size() == length && lhs == rhs.str();
 }
 //---------------------------------------------------------------------------
 template<size_t length>
 inline std::ostream& operator<<(std::ostream &lhs, const XorStr<length> &rhs)
 {
-	lhs << (std::string)rhs;
+	lhs << rhs.str();
+
 	return lhs;
+}
+//---------------------------------------------------------------------------
+template<size_t length, size_t length2>
+inline std::string operator+(const XorStr<length> &lhs, const XorStr<length2> &rhs)
+{
+	return lhs.str() + rhs.str();
+}
+//---------------------------------------------------------------------------
+template<size_t length>
+inline std::string operator+(const std::string &lhs, const XorStr<length> &rhs)
+{
+	return lhs + rhs.str();
 }
 //---------------------------------------------------------------------------
 template<size_t length>
