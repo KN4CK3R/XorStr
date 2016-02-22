@@ -17,12 +17,15 @@ namespace
 #define ALWAYS_INLINE __attribute__((always_inline))
 #endif
 
-template<size_t length>
-class XorStr
+template<typename _string_type, size_t _length>
+class _Basic_XorStr
 {
+	using value_type = typename _string_type::value_type;
+	static constexpr auto _length_minus_one = _length - 1;
+
 public:
-	constexpr ALWAYS_INLINE XorStr(char const (&str)[length + 1])
-		: XorStr(str, std::make_index_sequence<length - 1>())
+	constexpr ALWAYS_INLINE _Basic_XorStr(value_type const (&str)[_length])
+		: _Basic_XorStr(str, std::make_index_sequence<_length_minus_one>())
 	{
 
 	}
@@ -38,24 +41,24 @@ public:
 	{
 		decrypt();
 
-		return std::string(data, data + length);
+		return _string_type(data, data + _length_minus_one);
 	}
 
-	inline operator std::string() const
+	inline operator _string_type() const
 	{
 		return str();
 	}
 
 private:
-	template<size_t length, size_t... indices>
-	constexpr ALWAYS_INLINE XorStr(char const (&str)[length], std::index_sequence<indices...>)
+	template<size_t... indices>
+	constexpr ALWAYS_INLINE _Basic_XorStr(value_type const (&str)[_length], std::index_sequence<indices...>)
 		: data{ crypt(str[indices], indices)..., '\0' },
 		  encrypted(true)
 	{
 
 	}
 
-	static constexpr auto XOR_KEY = static_cast<unsigned char>(
+	static constexpr auto XOR_KEY = static_cast<value_type>(
 		const_atoi(__TIME__[7]) +
 		const_atoi(__TIME__[6]) * 10 +
 		const_atoi(__TIME__[4]) * 60 +
@@ -64,16 +67,16 @@ private:
 		const_atoi(__TIME__[0]) * 36000
 	);
 
-	static ALWAYS_INLINE constexpr auto crypt(char c, size_t i)
+	static ALWAYS_INLINE constexpr auto crypt(value_type c, size_t i)
 	{
-		return static_cast<char>(c ^ (XOR_KEY + i));
+		return static_cast<value_type>(c ^ (XOR_KEY + i));
 	}
 
 	inline void decrypt() const
 	{
 		if (encrypted)
 		{
-			for (size_t t = 0; t < length; t++)
+			for (size_t t = 0; t < _length_minus_one; t++)
 			{
 				data[t] = crypt(data[t], t);
 			}
@@ -81,45 +84,58 @@ private:
 		}
 	}
 
-	mutable char data[length + 1];
+	mutable value_type data[_length];
 	mutable bool encrypted;
 };
 //---------------------------------------------------------------------------
-template<size_t length, size_t length2>
-inline bool operator==(const XorStr<length> &lhs, const XorStr<length2> &rhs)
+template<size_t _length>
+using XorStrA = class _Basic_XorStr<std::string, _length>;
+template<size_t _length>
+using XorStrW = class _Basic_XorStr<std::wstring, _length>;
+//---------------------------------------------------------------------------
+template<typename _string_type, size_t _length, size_t _LENGTH2>
+inline auto operator==(const _Basic_XorStr<_string_type, _length> &lhs, const _Basic_XorStr<_string_type, _LENGTH2> &rhs)
 {
-	return length == length2 && lhs.str() == rhs.str();
+	static_assert(_length == _LENGTH2, "XorStr== different length");
+
+	return _length == _LENGTH2 && lhs.str() == rhs.str();
 }
 //---------------------------------------------------------------------------
-template<size_t length>
-inline bool operator==(const std::string &lhs, const XorStr<length> &rhs)
+template<typename _string_type, size_t _length>
+inline auto operator==(const _string_type &lhs, const _Basic_XorStr<_string_type, _length> &rhs)
 {
-	return lhs.size() == length && lhs == rhs.str();
+	return lhs.size() == _length && lhs == rhs.str();
 }
 //---------------------------------------------------------------------------
-template<size_t length>
-inline std::ostream& operator<<(std::ostream &lhs, const XorStr<length> &rhs)
+template<typename _stream_type, typename _string_type, size_t _length>
+inline auto& operator<<(_stream_type &lhs, const _Basic_XorStr<_string_type, _length> &rhs)
 {
 	lhs << rhs.c_str();
 
 	return lhs;
 }
 //---------------------------------------------------------------------------
-template<size_t length, size_t length2>
-inline std::string operator+(const XorStr<length> &lhs, const XorStr<length2> &rhs)
+template<typename _string_type, size_t _length, size_t _LENGTH2>
+inline auto operator+(const _Basic_XorStr<_string_type, _length> &lhs, const _Basic_XorStr<_string_type, _LENGTH2> &rhs)
 {
 	return lhs.str() + rhs.str();
 }
 //---------------------------------------------------------------------------
-template<size_t length>
-inline std::string operator+(const std::string &lhs, const XorStr<length> &rhs)
+template<typename _string_type, size_t _length>
+inline auto operator+(const _string_type &lhs, const _Basic_XorStr<_string_type, _length> &rhs)
 {
 	return lhs + rhs.str();
 }
 //---------------------------------------------------------------------------
-template<size_t length>
-constexpr ALWAYS_INLINE auto _xor_(char const (&str)[length])
+template<size_t _length>
+constexpr ALWAYS_INLINE auto _xor_(char const (&str)[_length])
 {
-	return XorStr<length - 1>(str);
+	return XorStrA<_length>(str);
+}
+//---------------------------------------------------------------------------
+template<size_t _length>
+constexpr ALWAYS_INLINE auto _xor_(wchar_t const (&str)[_length])
+{
+	return XorStrW<_length>(str);
 }
 //---------------------------------------------------------------------------
