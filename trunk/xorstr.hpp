@@ -92,13 +92,17 @@ template<size_t _length>
 using XorStrA = class _Basic_XorStr<std::string, _length>;
 template<size_t _length>
 using XorStrW = class _Basic_XorStr<std::wstring, _length>;
+template<size_t _length>
+using XorStrU16 = class _Basic_XorStr<std::u16string, _length>;
+template<size_t _length>
+using XorStrU32 = class _Basic_XorStr<std::u32string, _length>;
 //---------------------------------------------------------------------------
-template<typename _string_type, size_t _length, size_t _LENGTH2>
-inline auto operator==(const _Basic_XorStr<_string_type, _length> &lhs, const _Basic_XorStr<_string_type, _LENGTH2> &rhs)
+template<typename _string_type, size_t _length, size_t _length2>
+inline auto operator==(const _Basic_XorStr<_string_type, _length> &lhs, const _Basic_XorStr<_string_type, _length2> &rhs)
 {
-	static_assert(_length == _LENGTH2, "XorStr== different length");
+	static_assert(_length == _length2, "XorStr== different length");
 
-	return _length == _LENGTH2 && lhs.str() == rhs.str();
+	return _length == _length2 && lhs.str() == rhs.str();
 }
 //---------------------------------------------------------------------------
 template<typename _string_type, size_t _length>
@@ -115,8 +119,8 @@ inline auto& operator<<(_stream_type &lhs, const _Basic_XorStr<_string_type, _le
 	return lhs;
 }
 //---------------------------------------------------------------------------
-template<typename _string_type, size_t _length, size_t _LENGTH2>
-inline auto operator+(const _Basic_XorStr<_string_type, _length> &lhs, const _Basic_XorStr<_string_type, _LENGTH2> &rhs)
+template<typename _string_type, size_t _length, size_t _length2>
+inline auto operator+(const _Basic_XorStr<_string_type, _length> &lhs, const _Basic_XorStr<_string_type, _length2> &rhs)
 {
 	return lhs.str() + rhs.str();
 }
@@ -137,5 +141,17 @@ template<size_t _length>
 constexpr ALWAYS_INLINE auto _xor_(wchar_t const (&str)[_length])
 {
 	return XorStrW<_length>(str);
+}
+//---------------------------------------------------------------------------
+template<size_t _length>
+constexpr ALWAYS_INLINE auto _xor_(char16_t const (&str)[_length])
+{
+	return XorStrU16<_length>(str);
+}
+//---------------------------------------------------------------------------
+template<size_t _length>
+constexpr ALWAYS_INLINE auto _xor_(char32_t const (&str)[_length])
+{
+	return XorStrU32<_length>(str);
 }
 //---------------------------------------------------------------------------
