@@ -89,13 +89,13 @@ private:
 };
 //---------------------------------------------------------------------------
 template<size_t _length>
-using XorStrA = class _Basic_XorStr<std::string, _length>;
+using XorStrA = _Basic_XorStr<std::string, _length>;
 template<size_t _length>
-using XorStrW = class _Basic_XorStr<std::wstring, _length>;
+using XorStrW = _Basic_XorStr<std::wstring, _length>;
 template<size_t _length>
-using XorStrU16 = class _Basic_XorStr<std::u16string, _length>;
+using XorStrU16 = _Basic_XorStr<std::u16string, _length>;
 template<size_t _length>
-using XorStrU32 = class _Basic_XorStr<std::u32string, _length>;
+using XorStrU32 = _Basic_XorStr<std::u32string, _length>;
 //---------------------------------------------------------------------------
 template<typename _string_type, size_t _length, size_t _length2>
 inline auto operator==(const _Basic_XorStr<_string_type, _length> &lhs, const _Basic_XorStr<_string_type, _length2> &rhs)
