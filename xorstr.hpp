@@ -48,6 +48,30 @@ public:
 		return str();
 	}
 
+	inline void encrypt() const
+	{
+		if (!encrypted)
+		{
+			for (size_t t = 0; t < _length_minus_one; t++)
+			{
+				data[t] = crypt(data[t], t);
+			}
+			encrypted = true;
+		}
+	}
+
+	inline void decrypt() const
+	{
+		if (encrypted)
+		{
+			for (size_t t = 0; t < _length_minus_one; t++)
+			{
+				data[t] = crypt(data[t], t);
+			}
+			encrypted = false;
+		}
+	}
+
 private:
 	template<size_t... indices>
 	constexpr ALWAYS_INLINE _Basic_XorStr(value_type const (&str)[_length], std::index_sequence<indices...>)
@@ -69,18 +93,6 @@ private:
 	static ALWAYS_INLINE constexpr auto crypt(value_type c, size_t i)
 	{
 		return static_cast<value_type>(c ^ (XOR_KEY + i));
-	}
-
-	inline void decrypt() const
-	{
-		if (encrypted)
-		{
-			for (size_t t = 0; t < _length_minus_one; t++)
-			{
-				data[t] = crypt(data[t], t);
-			}
-			encrypted = false;
-		}
 	}
 
 	mutable value_type data[_length];
