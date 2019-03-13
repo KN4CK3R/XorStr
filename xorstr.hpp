@@ -100,9 +100,9 @@ private:
 };
 //---------------------------------------------------------------------------
 template<size_t _length>
-using XorStrA = _Basic_XorStr<std::string, _length>;
+using XorStrA = _Basic_XorStr<char, _length>;
 template<size_t _length>
-using XorStrW = _Basic_XorStr<std::wstring, _length>;
+using XorStrW = _Basic_XorStr<wchar_t, _length>;
 template<size_t _length>
 using XorStrU16 = _Basic_XorStr<std::u16string, _length>;
 template<size_t _length>
