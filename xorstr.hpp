@@ -29,11 +29,6 @@ public:
 
 	}
 
-	inline auto c_str_ptr() const
-	{
-		return data;
-	}
-
 	inline auto c_str() const
 	{
 		decrypt();
