@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include <utility>
 
 namespace
 {
@@ -57,10 +56,7 @@ public:
 	{
 		if (!encrypted)
 		{
-			for (size_t t = 0; t < _length_minus_one; t++)
-			{
-				data[t] = crypt(data[t], t);
-			}
+			cryptLoop();
 			encrypted = true;
 		}
 	}
@@ -69,10 +65,7 @@ public:
 	{
 		if (encrypted)
 		{
-			for (size_t t = 0; t < _length_minus_one; t++)
-			{
-				data[t] = crypt(data[t], t);
-			}
+			cryptLoop();
 			encrypted = false;
 		}
 	}
@@ -84,6 +77,14 @@ private:
 		encrypted(true)
 	{
 
+	}
+
+	void cryptLoop() const
+	{
+		for (size_t t = 0; t < _length_minus_one; t++)
+		{
+			data[t] = crypt(data[t], t);
+		}
 	}
 
 	static constexpr auto XOR_KEY = static_cast<value_type>(
