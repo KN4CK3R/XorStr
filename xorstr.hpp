@@ -110,9 +110,9 @@ using XorStrA = _Basic_XorStr<char, _length>;
 template<size_t _length>
 using XorStrW = _Basic_XorStr<wchar_t, _length>;
 template<size_t _length>
-using XorStrU16 = _Basic_XorStr<std::u16string, _length>;
+using XorStrU16 = _Basic_XorStr<char16_t, _length>;
 template<size_t _length>
-using XorStrU32 = _Basic_XorStr<std::u32string, _length>;
+using XorStrU32 = _Basic_XorStr<char32_t, _length>;
 //---------------------------------------------------------------------------
 template<typename value_type, size_t _length>
 constexpr ALWAYS_INLINE auto _xor_(const value_type (&str)[_length])
